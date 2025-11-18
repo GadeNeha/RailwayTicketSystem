@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Railway Ticket System</a> &gt; <a href="index.source.html" class="el_package">com.railway.ticketsystem.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.railway.ticketsystem.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.railway.ticketsystem.model.User;
+import com.railway.ticketsystem.repository.UserRepository;
+import com.railway.ticketsystem.security.PasswordHasher;
+
+@Service
+<span class="fc" id="L13">public class UserService {</span>
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordHasher passwordHasher;
+
+    // ✅ Register a new user
+    /*public String registerUser(User user) {
+        if (userDAO.findByEmail(user.getEmail()) != null) {
+            return &quot;❌ Email already registered!&quot;;
+        }
+
+        // ✅ Hash password before saving
+        String hashedPassword = passwordHasher.hash(user.getPassword());
+        user.setPassword(hashedPassword);
+
+        userDAO.save(user);
+        System.out.println(&quot;✅ User saved with hashed password: &quot; + hashedPassword);
+        return &quot;✅ User registered successfully: &quot; + user.getEmail();
+    }*/
+
+    public String registerUser(User user) {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (userRepository.findByEmail(user.getEmail()) != null) {</span>
+<span class="fc" id="L38">           return &quot;❌ Email already registered!&quot;;</span>
+        }
+
+        // ✅ Add this null or empty password check
+<span class="pc bpc" id="L42" title="1 of 4 branches missed.">        if (user.getPassword() == null || user.getPassword().isEmpty()) {</span>
+<span class="fc" id="L43">           throw new NullPointerException(&quot;Password cannot be null or empty&quot;);</span>
+        }
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (user.getPassword().length() &lt; 8) {</span>
+<span class="fc" id="L47">            throw new IllegalArgumentException(&quot;Password too short&quot;);</span>
+        }
+
+<span class="fc" id="L50">        String hashedPassword = passwordHasher.hash(user.getPassword());</span>
+<span class="fc" id="L51">        user.setPassword(hashedPassword);</span>
+
+<span class="fc" id="L53">        userRepository.save(user);</span>
+<span class="fc" id="L54">        System.out.println(&quot;✅ User saved with hashed password: &quot; + hashedPassword);</span>
+<span class="fc" id="L55">        return &quot;✅ User registered successfully: &quot; + user.getEmail();</span>
+    }
+
+
+    public List&lt;User&gt; getAllUsers() {
+<span class="fc" id="L60">        return userRepository.findAll();</span>
+    }
+
+    public String updateUserProfile(String email, User updatedInfo) {
+<span class="fc" id="L64">        User user = userRepository.findByEmail(email);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (user == null) return &quot;User not found!&quot;;</span>
+<span class="fc" id="L66">        user.setPhone(updatedInfo.getPhone());</span>
+<span class="fc" id="L67">        user.setAddress(updatedInfo.getAddress());</span>
+<span class="fc" id="L68">        userRepository.save(user);</span>
+<span class="fc" id="L69">        return &quot;Profile updated successfully!&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
